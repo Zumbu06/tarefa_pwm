@@ -43,6 +43,28 @@ int main() {
             fade -= 5;
             sleep_ms(10);
         }
+
+        // Controle do LED RGB no GPIO 12
+        gpio_set_function(LED_PIN, GPIO_FUNC_PWM);
+        uint led_slice = pwm_gpio_to_slice_num(LED_PIN);
+
+        // Configura o wrap e o divisor de clock para a frequência do LED RGB
+        pwm_set_clkdiv(led_slice, 125.0);  // Para uma frequência adequada ao controle de brilho
+        pwm_set_wrap(led_slice, 255);      // Wrap para 255 (controle de intensidade)
+        pwm_set_enabled(led_slice, true);
+
+        // Alterna o brilho do LED entre diferentes intensidades
+        pwm_set_gpio_level(LED_PIN, 128);  // Intensidade média (cor intermediária)
+        sleep_ms(500);
+
+        pwm_set_gpio_level(LED_PIN, 255);  // Intensidade máxima (cor intensa)
+        sleep_ms(500);
+
+        pwm_set_gpio_level(LED_PIN, 64);   // Intensidade baixa (cor suave)
+        sleep_ms(500);
+
+        pwm_set_gpio_level(LED_PIN, 0);    // Desliga o LED
+        sleep_ms(500);
     }
 
     return 0;
