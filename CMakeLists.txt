@@ -34,7 +34,6 @@ project(tarefa_pwm C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-
 add_executable(tarefa_pwm tarefa_pwm.c )
 
 pico_set_program_name(tarefa_pwm "tarefa_pwm")
@@ -46,17 +45,15 @@ pico_enable_stdio_usb(tarefa_pwm 1)
 
 # Add the standard library to the build
 target_link_libraries(tarefa_pwm
-        pico_stdlib)
+        pico_stdlib
+        hardware_pwm
+        hardware_gpio
+)
 
 # Add the standard include files to the build
 target_include_directories(tarefa_pwm PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
-# Add any user requested libraries
-target_link_libraries(tarefa_pwm 
-        
-        )
-
+# Add any user requested libraries (já incluído acima)
 pico_add_extra_outputs(tarefa_pwm)
-
