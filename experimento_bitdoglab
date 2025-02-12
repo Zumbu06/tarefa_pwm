@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "hardware/pwm.h"
+
+#define SERVO_PIN 22
+#define LED_PIN 12
+#define PWM_FREQ 50
+
+int main() {
+    stdio_init_all();
+
+    // Configura o PWM para o servo no pino especificado
+    gpio_set_function(SERVO_PIN, GPIO_FUNC_PWM);
+    uint slice_servo = pwm_gpio_to_slice_num(SERVO_PIN);
+
+    // Configura o PWM para o LED no pino especificado
+    gpio_set_function(LED_PIN, GPIO_FUNC_PWM);
+    uint slice_led = pwm_gpio_to_slice_num(LED_PIN);
+
+    // Configura PWM para 50Hz (20ms) tanto para o servo quanto para o LED
+    pwm_set_clkdiv(slice_servo, 125.0);
+    pwm_set_wrap(slice_servo, 20000);
+    pwm_set_enabled(slice_servo, true);
+
+    pwm_set_clkdiv(slice_led, 125.0);
+    pwm_set_wrap(slice_led, 20000);
+    pwm_set_enabled(slice_led, true);
+
+    // Movimentos iniciais (Servo e LED juntos)
+    pwm_set_gpio_level(SERVO_PIN, 2400);
+    pwm_set_gpio_level(LED_PIN, 2400);
+    sleep_ms(5000);
+
+    pwm_set_gpio_level(SERVO_PIN, 1470);
+    pwm_set_gpio_level(LED_PIN, 1470);
+    sleep_ms(5000);
+
+    pwm_set_gpio_level(SERVO_PIN, 500);
+    pwm_set_gpio_level(LED_PIN, 500);
+    sleep_ms(5000);
+
+    // Variável para controlar a movimentação suave
+    uint16_t fade = 500;
+
+    while (1) {
+        // Movimento de 0° para 180°
+        while (fade != 2400) {
+            pwm_set_gpio_level(SERVO_PIN, fade);
+            pwm_set_gpio_level(LED_PIN, fade);
+            fade += 5;
+            sleep_ms(10);
+        }
+
+        // Movimento de 180° para 0°
+        while (fade != 500) {
+            pwm_set_gpio_level(SERVO_PIN, fade);
+            pwm_set_gpio_level(LED_PIN, fade);
+            fade -= 5;
+            sleep_ms(10);
+        }
+    }
+
+    return 0;
+}
